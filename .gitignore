@@ -3,6 +3,7 @@ downloaded_minutes/
 
 # CSV files (data is in DuckDB database)
 *.csv
+*.db
 
 # Python related
 __pycache__/
