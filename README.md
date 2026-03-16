@@ -11,7 +11,7 @@ The repo currently contains a DuckDB database file containing voting records for
 The project consists of several scripts that work in a sequence:
 
 1. `scraper.py`: Downloads meeting minutes PDFs from Madison's Legistar system
-   - Fetches PDFs of all city meetings in Legistar
+   - Fetches PDFs of all city meetings in Legistar (paginates through API results to avoid the 1000-record default limit)
    - Saves them to `downloaded_minutes/` directory
 
 2. `organize_minutes.py`: Organizes the downloaded PDFs

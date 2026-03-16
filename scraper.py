@@ -17,18 +17,34 @@ class MadisonLegistarScraper:
     
     def fetch_events(self, start_date=None, end_date=None):
         """
-        Fetch events from the Legistar API with optional date filtering
+        Fetch events from the Legistar API with optional date filtering.
+        Paginates through results since the API caps responses at 1000 records.
         """
         params = {}
         if start_date:
             params['$filter'] = f"EventDate ge datetime'{start_date}'"
             if end_date:
                 params['$filter'] += f" and EventDate le datetime'{end_date}'"
-        
+
+        all_events = []
+        page_size = 1000
+        skip = 0
+
         try:
-            response = requests.get(self.events_url, params=params)
-            response.raise_for_status()
-            return response.json()
+            while True:
+                params['$top'] = page_size
+                params['$skip'] = skip
+                response = requests.get(self.events_url, params=params)
+                response.raise_for_status()
+                batch = response.json()
+                if not batch:
+                    break
+                all_events.extend(batch)
+                if len(batch) < page_size:
+                    break
+                skip += page_size
+                print(f"Fetched {len(all_events)} events so far...")
+            return all_events if all_events else None
         except requests.exceptions.RequestException as e:
             print(f"Error fetching events: {e}")
             return None
